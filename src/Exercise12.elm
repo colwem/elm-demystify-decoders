@@ -1,6 +1,7 @@
 module Exercise12 exposing (Tree(..), decoder)
 
-import Json.Decode exposing (Decoder, fail)
+import Json.Decode as D exposing (Decoder, fail, map)
+import List exposing (map)
 
 
 
@@ -43,7 +44,17 @@ type
 
 decoder : Decoder Tree
 decoder =
-    fail "I'm not a tree."
+   D.oneOf [leafDecoder, branchDecoder]
+
+leafDecoder : Decoder Tree
+leafDecoder =
+   D.map2 Leaf (D.field "name" D.string) (D.field "value" D.int)
+
+branchDecoder : Decoder Tree
+branchDecoder =
+   D.map2 Branch 
+      (D.field "name" D.string) 
+      (D.field "children" (D.list (D.lazy (\_ -> decoder))))
 
 
 

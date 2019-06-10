@@ -1,6 +1,7 @@
 module Exercise11 exposing (decoder)
 
-import Json.Decode exposing (Decoder, fail)
+import Json.Decode as D exposing (Decoder, fail)
+import List as L
 
 
 
@@ -30,8 +31,11 @@ import Json.Decode exposing (Decoder, fail)
 
 decoder : Decoder (List Int)
 decoder =
-    fail "Implement me!"
-
+   D.field "number" 
+      <| D.oneOf 
+         [ D.map L.singleton D.int
+         , D.list D.int
+         ]
 
 
 {- Once you think you're done, run the tests for this exercise from the root of

@@ -1,6 +1,6 @@
 module Exercise10 exposing (Person, PersonDetails, Role(..), decoder)
 
-import Json.Decode exposing (Decoder, fail)
+import Json.Decode as D exposing (Decoder, fail)
 
 
 
@@ -48,9 +48,34 @@ type Role
 
 decoder : Decoder (List Person)
 decoder =
-    fail "This seems like a lot of work."
+   D.list <| D.map3 Person
+      (D.field "username" D.string)
+      (D.field "role" roleDecoder)
+      (D.field "details" personDetailsDecoder)
 
 
+personDetailsDecoder : Decoder PersonDetails
+personDetailsDecoder =
+   D.map2 PersonDetails
+      (D.field "registered" D.string)
+      (D.field "aliases" <| D.list D.string)
+
+roleDecoder : Decoder Role
+roleDecoder =
+   D.string |> D.andThen (\s -> 
+      case s of
+         "regular" ->
+            D.succeed Regular
+
+         "newbie" ->
+            D.succeed Newbie
+
+         "oldfart" ->
+            D.succeed OldFart
+
+         _ ->
+            D.fail "Unknown role"
+      )
 
 {- Once you think you're done, run the tests for this exercise from the root of
    the project:
